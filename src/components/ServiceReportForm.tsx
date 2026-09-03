@@ -10,6 +10,7 @@ import SpeechTextArea from './ui/SpeechTextArea';
 import PhotoCapture from './ui/PhotoCapture';
 import SignaturePad from './ui/SignaturePad';
 import PreviewModal from './pdf/PreviewModal';
+import SearchableSelect from './ui/SearchableSelect';
 import { pdf } from '@react-pdf/renderer';
 import { ReportDocument } from './pdf/ReportDocument';
 const generateReportId = () => {
@@ -264,13 +265,18 @@ export default function ServiceReportForm() {
         
         <div>
           <label className="text-gray-500 text-xs block mb-1">ชื่อไซต์ / ลูกค้า</label>
-          <input type="text" list="site-list" placeholder="พิมพ์เพื่อค้นหา..." {...register('siteName')} className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500" />
-          <datalist id="site-list">
-            {siteOptions.map((site, index) => {
-              const name = typeof site === 'string' ? site : site.name;
-              return <option key={`${name}-${index}`} value={name} />
-            })}
-          </datalist>
+          <Controller
+            name="siteName"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect 
+                options={siteOptions.map(s => typeof s === 'string' ? s : s.name)}
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="พิมพ์เพื่อค้นหา หรือเลือกจากรายชื่อ..."
+              />
+            )}
+          />
         </div>
 
         <Controller

@@ -8,8 +8,7 @@ import { ServiceReportFormValues } from '@/types/service-report';
  */
 export const generatePdfBlob = async (data: ServiceReportFormValues): Promise<Blob> => {
   const document = ReportDocument({ data }); // JSX Element
-  const asPdf = pdf([]); // create an empty pdf instance
-  asPdf.updateContainer(document);
+  const asPdf = pdf(document);
   const blob = await asPdf.toBlob();
   return blob;
 };

@@ -46,7 +46,7 @@ export default function ServiceReportForm() {
       workersCount: 1,
       staffNames: [],
       jobType: 'Installation (งานติดตั้ง)',
-      jobStatus: 'Completed',
+      jobStatus: 'งานเสร็จเรียบร้อย',
       actionDetails: '',
       photos: [],
       technicianSignature: '',
@@ -340,6 +340,66 @@ export default function ServiceReportForm() {
         </div>
         
         <div>
+               <label className="text-gray-700 font-medium text-sm block mb-3">สถานะงาน (Job Status)</label>
+               <div className="flex flex-wrap gap-3">
+                  {[
+                    { label: 'งานเสร็จเรียบร้อย', color: 'green' },
+                    { label: 'ต้องมีการติดตามผล', color: 'red' },
+                    { label: 'รอการดำเนินการ', color: 'yellow' },
+                    { label: 'อื่นๆ', color: 'gray' }
+                  ].map((status) => {
+                      const currentStatus = watch('jobStatus');
+                      const isPreset = ['งานเสร็จเรียบร้อย', 'ต้องมีการติดตามผล', 'รอการดำเนินการ'].includes(currentStatus);
+                      
+                      let isSelected = false;
+                      if (status.label === 'อื่นๆ') {
+                        isSelected = !isPreset;
+                      } else {
+                        isSelected = currentStatus === status.label;
+                      }
+
+                      let colorClasses = 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50';
+                      if (isSelected) {
+                        if (status.color === 'green') colorClasses = 'bg-green-50 border-green-500 text-green-700 ring-1 ring-green-500';
+                        if (status.color === 'red') colorClasses = 'bg-red-50 border-red-500 text-red-700 ring-1 ring-red-500';
+                        if (status.color === 'yellow') colorClasses = 'bg-yellow-50 border-yellow-500 text-yellow-700 ring-1 ring-yellow-500';
+                        if (status.color === 'gray') colorClasses = 'bg-gray-50 border-gray-500 text-gray-700 ring-1 ring-gray-500';
+                      }
+
+                      return (
+                          <button
+                              key={status.label}
+                              type="button"
+                              onClick={() => {
+                                if (status.label === 'อื่นๆ') {
+                                  setValue('jobStatus', 'ระบุ...');
+                                } else {
+                                  setValue('jobStatus', status.label);
+                                }
+                              }}
+                              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${colorClasses}`}
+                          >
+                              {status.label}
+                          </button>
+                      )
+                  })}
+               </div>
+
+               {!['งานเสร็จเรียบร้อย', 'ต้องมีการติดตามผล', 'รอการดำเนินการ'].includes(watch('jobStatus')) && (
+                 <div className="mt-3">
+                    <input 
+                      type="text"
+                      placeholder="โปรดระบุสถานะงาน..."
+                      value={watch('jobStatus') === 'ระบุ...' ? '' : watch('jobStatus')}
+                      onChange={(e) => setValue('jobStatus', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-gray-500"
+                      autoFocus
+                    />
+                 </div>
+               )}
+          </div>
+        
+        <div>
              <label className="text-gray-700 font-medium text-sm block mb-3">ประเภทงาน (Job Type)</label>
              <div className="grid grid-cols-2 gap-3">
                 {[
@@ -368,29 +428,6 @@ export default function ServiceReportForm() {
                             }`}
                         >
                             {type}
-                        </button>
-                    )
-                })}
-             </div>
-        </div>
-
-        <div>
-             <label className="text-gray-700 font-medium text-sm block mb-3">สถานะงาน (Job Status)</label>
-             <div className="flex flex-wrap gap-3">
-                {['Completed', 'Pending Parts', 'Follow-up Required'].map((status) => {
-                    const isSelected = watch('jobStatus') === status;
-                    return (
-                        <button
-                            key={status}
-                            type="button"
-                            onClick={() => setValue('jobStatus', status as any)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                                isSelected 
-                                    ? (status === 'Completed' ? 'bg-green-100 border-green-500 text-green-700' : 'bg-yellow-100 border-yellow-500 text-yellow-700')
-                                    : 'bg-white border-gray-300 text-gray-600'
-                            }`}
-                        >
-                            {status}
                         </button>
                     )
                 })}

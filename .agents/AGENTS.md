@@ -65,3 +65,7 @@ src/
 3. **Vercel Timeout Fix (504 Gateway Timeout):** Added export const maxDuration = 60; to both /api/submit/route.ts and /api/send-report/route.ts. The Google Apps Script processing takes around 13-15 seconds, which exceeded the default 10-second timeout of Vercel's Hobby tier. This fix extends the allowed duration to the maximum 60 seconds.
 4. **Improved Error Handling:** Updated ServiceReportForm.tsx to display the actual error message inside the SweetAlert2 popup when a server/network error occurs during submission, making debugging easier.
 5. **PDF Rendering Fix:** Resolved a TypeScript error (TS2345) in pdfHelper.ts where @react-pdf/renderer v4.x expected a valid React element rather than an empty array.
+6. **Form Options Refactor:** Updated the Job Type and Job Status options.
+   - **Job Type:** Changed to match exactly 13 specific roles (e.g. Installation, Preventive, Repair, etc.).
+   - **Job Status:** Translated to Thai with specific colors ("งานเสร็จเรียบร้อย" (Green), "ต้องมีการติดตามผล" (Red), "รอการดำเนินการ" (Yellow)).
+   - Added an "อื่นๆ" (Other) option for Job Status which toggles a text input allowing custom status, preserving dynamic PDF coloring (Gray for custom statuses).

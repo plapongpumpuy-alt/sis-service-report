@@ -1,5 +1,5 @@
 export type JobType = string;
-export type JobStatus = 'Completed' | 'Pending Parts' | 'Follow-up Required';
+export type JobStatus = string;
 
 export interface LocationData {
   latitude: number | null;

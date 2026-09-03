@@ -172,7 +172,16 @@ const formatTime = (timeStr: string) => {
   return timeStr;
 };
 
-export const ReportDocument = ({ data }: Props) => (
+export const ReportDocument = ({ data }: Props) => {
+  const getStatusColors = (status: string) => {
+    if (status === 'งานเสร็จเรียบร้อย') return { bg: '#dcfce7', border: '#bbf7d0', title: '#166534', value: '#14532d' };
+    if (status === 'รอการดำเนินการ') return { bg: '#fef3c7', border: '#fde68a', title: '#92400e', value: '#78350f' };
+    if (status === 'ต้องมีการติดตามผล') return { bg: '#fee2e2', border: '#fecaca', title: '#991b1b', value: '#7f1d1d' };
+    return { bg: '#f3f4f6', border: '#e5e7eb', title: '#4b5563', value: '#1f2937' };
+  };
+  const colors = getStatusColors(data.jobStatus || '');
+
+  return (
   <Document>
     <Page size="A4" style={styles.page}>
       
@@ -232,26 +241,24 @@ export const ReportDocument = ({ data }: Props) => (
         borderWidth: 1,
         borderRadius: 4,
         marginBottom: 10,
-        backgroundColor: data.jobStatus === 'Completed' ? '#dcfce7' : 
-                         data.jobStatus === 'Pending Parts' ? '#fef3c7' : '#fee2e2',
-        borderColor: data.jobStatus === 'Completed' ? '#bbf7d0' : 
-                     data.jobStatus === 'Pending Parts' ? '#fde68a' : '#fecaca',
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
       }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: data.jobStatus === 'Completed' ? '#166534' : data.jobStatus === 'Pending Parts' ? '#92400e' : '#991b1b' }}>TIME IN</Text>
-          <Text style={{ fontSize: 11, fontWeight: 'bold', color: data.jobStatus === 'Completed' ? '#14532d' : data.jobStatus === 'Pending Parts' ? '#78350f' : '#7f1d1d' }}>{formatTime(data.startTime)}</Text>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: colors.title }}>TIME IN</Text>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.value }}>{formatTime(data.startTime)}</Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: data.jobStatus === 'Completed' ? '#166534' : data.jobStatus === 'Pending Parts' ? '#92400e' : '#991b1b' }}>TIME OUT</Text>
-          <Text style={{ fontSize: 11, fontWeight: 'bold', color: data.jobStatus === 'Completed' ? '#14532d' : data.jobStatus === 'Pending Parts' ? '#78350f' : '#7f1d1d' }}>{formatTime(data.endTime)}</Text>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: colors.title }}>TIME OUT</Text>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.value }}>{formatTime(data.endTime)}</Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: data.jobStatus === 'Completed' ? '#166534' : data.jobStatus === 'Pending Parts' ? '#92400e' : '#991b1b' }}>TOTAL TIME</Text>
-          <Text style={{ fontSize: 11, fontWeight: 'bold', color: data.jobStatus === 'Completed' ? '#14532d' : data.jobStatus === 'Pending Parts' ? '#78350f' : '#7f1d1d' }}>{data.workDuration || '-'}</Text>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: colors.title }}>TOTAL TIME</Text>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.value }}>{data.workDuration || '-'}</Text>
         </View>
-        <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderLeftColor: data.jobStatus === 'Completed' ? '#86efac' : data.jobStatus === 'Pending Parts' ? '#fcd34d' : '#fca5a5' }}>
-          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: data.jobStatus === 'Completed' ? '#166534' : data.jobStatus === 'Pending Parts' ? '#92400e' : '#991b1b' }}>JOB STATUS</Text>
-          <Text style={{ fontSize: 12, fontWeight: 'bold', color: data.jobStatus === 'Completed' ? '#14532d' : data.jobStatus === 'Pending Parts' ? '#78350f' : '#7f1d1d' }}>{data.jobStatus || '-'}</Text>
+        <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderLeftColor: colors.border }}>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 2, color: colors.title }}>JOB STATUS</Text>
+          <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.value }}>{data.jobStatus || '-'}</Text>
         </View>
       </View>
 
@@ -296,3 +303,5 @@ export const ReportDocument = ({ data }: Props) => (
     </Page>
   </Document>
 );
+
+};

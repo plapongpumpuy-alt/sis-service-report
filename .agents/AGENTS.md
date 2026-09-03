@@ -58,3 +58,10 @@ src/
 7. **Form Validation:** The submit button now strictly requires `startTime, siteName, location, staffNames, actionDetails, photos, technicianSignature, customerSignature`. Only "Customer Name (Print)" is optional.
 8. **UI Overhaul:** Enhanced `ServiceReportForm.tsx` with gradients, section numbers, drop shadows, and modern Tailwind components for an app-like feel.
 9. **Email Dispatch:** Added backend API route `/api/send-report` using `nodemailer` to automatically send the generated PDF to the customer when the "toEmail" field is provided in the form. PDF is generated on the client side via `@react-pdf/renderer` and passed as a Base64 string to the backend.
+
+## Recent Updates (v.2026.09.03.1500)
+1. **Cloud Deployment (Vercel):** The project is now deployed on Vercel. CI/CD workflow is established via GitHub Desktop (plapongpumpuy-alt/sis-service-report). Any git push origin main will automatically trigger a new Vercel build.
+2. **Client-side Image Compression:** Updated PhotoCapture.tsx to automatically scale down uploaded photos (max 1200x1200px) and compress them to JPEG format (60% quality) using HTML Canvas. This prevents the 413 Payload Too Large error from Vercel's strict 4.5MB serverless function body size limit.
+3. **Vercel Timeout Fix (504 Gateway Timeout):** Added export const maxDuration = 60; to both /api/submit/route.ts and /api/send-report/route.ts. The Google Apps Script processing takes around 13-15 seconds, which exceeded the default 10-second timeout of Vercel's Hobby tier. This fix extends the allowed duration to the maximum 60 seconds.
+4. **Improved Error Handling:** Updated ServiceReportForm.tsx to display the actual error message inside the SweetAlert2 popup when a server/network error occurs during submission, making debugging easier.
+5. **PDF Rendering Fix:** Resolved a TypeScript error (TS2345) in pdfHelper.ts where @react-pdf/renderer v4.x expected a valid React element rather than an empty array.

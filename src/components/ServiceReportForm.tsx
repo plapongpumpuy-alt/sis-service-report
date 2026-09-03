@@ -115,6 +115,13 @@ export default function ServiceReportForm() {
     }
   }, [selectedSite, siteOptions, setValue]);
 
+  const selectedStaffs = watch('staffNames');
+  useEffect(() => {
+    if (selectedStaffs) {
+      setValue('workersCount', Math.max(1, selectedStaffs.length));
+    }
+  }, [selectedStaffs, setValue]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data: ServiceReportFormValues) => {

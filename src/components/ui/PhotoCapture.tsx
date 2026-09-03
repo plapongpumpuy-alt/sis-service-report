@@ -12,26 +12,57 @@ interface Props {
 export default function PhotoCapture({ photos, onChange, maxPhotos = 4 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.6 quality (approx 60%)
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newPhotos = [...photos];
-      let filesProcessed = 0;
-      
-      Array.from(files).forEach(file => {
-        if (newPhotos.length + filesProcessed < maxPhotos) {
-          filesProcessed++;
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-               newPhotos.push(reader.result);
-               onChange([...newPhotos]);
-            }
-          };
-          reader.readAsDataURL(file);
+      let currentPhotos = [...photos];
+      for (let i = 0; i < files.length; i++) {
+        if (currentPhotos.length < maxPhotos) {
+          const compressed = await compressImage(files[i]);
+          currentPhotos.push(compressed);
+          onChange([...currentPhotos]);
         }
-      });
+      }
     }
+    // Reset file input so same file can be selected again if needed
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const removePhoto = (index: number) => {

@@ -45,7 +45,7 @@ export default function ServiceReportForm() {
       location: { latitude: null, longitude: null },
       workersCount: 1,
       staffNames: [],
-      jobType: 'Preventive Maintenance',
+      jobType: 'Installation (งานติดตั้ง)',
       jobStatus: 'Completed',
       actionDetails: '',
       photos: [],
@@ -342,7 +342,21 @@ export default function ServiceReportForm() {
         <div>
              <label className="text-gray-700 font-medium text-sm block mb-3">ประเภทงาน (Job Type)</label>
              <div className="grid grid-cols-2 gap-3">
-                {['Installation', 'Preventive Maintenance', 'Corrective/Emergency', 'Inspection'].map((type) => {
+                {[
+                  'Installation (งานติดตั้ง)',
+                  'Program (งานโปรแกรม)',
+                  'Preventive (บำรุงรักษา)',
+                  'Billing (วางบิล)',
+                  'Calibration (สอบเทียบ)',
+                  'Repair (ซ่อมแซม)',
+                  'Service Contract (สัญญาบริการ)',
+                  'Warranty (อยู่ในรับประกัน)',
+                  'Electric Wiring',
+                  'Training',
+                  'Maintenance',
+                  'Account',
+                  'Urgent'
+                ].map((type) => {
                     const isSelected = watch('jobType') === type;
                     return (
                         <button

@@ -1,4 +1,4 @@
-export type JobType = 'Installation' | 'Preventive Maintenance' | 'Corrective/Emergency' | 'Inspection';
+export type JobType = string;
 export type JobStatus = 'Completed' | 'Pending Parts' | 'Follow-up Required';
 
 export interface LocationData {

@@ -217,8 +217,8 @@ export default function ServiceReportForm() {
       } else {
         Swal.fire('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์', result.message, 'error');
       }
-    } catch (error) {
-      Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+    } catch (error: any) {
+      Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้: ' + (error.message || String(error)), 'error');
       console.error(error);
     } finally {
       setIsSubmitting(false);

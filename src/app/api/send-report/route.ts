@@ -103,3 +103,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: 'error', message: error.message || 'Failed to send email' }, { status: 500 });
   }
 }
+
+export const maxDuration = 60;

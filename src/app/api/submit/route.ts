@@ -30,3 +30,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: 'error', message: error.message || 'Failed to submit data' }, { status: 500 });
   }
 }
+
+export const maxDuration = 60;

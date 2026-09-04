@@ -87,7 +87,6 @@ export default function PhotoCapture({ photos, onChange, maxPhotos = 4 }: Props)
         <input 
           type="file" 
           accept="image/*" 
-          capture="environment" 
           multiple
           className="hidden" 
           ref={fileInputRef}

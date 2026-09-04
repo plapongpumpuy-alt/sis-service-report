@@ -284,7 +284,7 @@ export const ReportDocument = ({ data }: Props) => {
           ) : (
             <View style={styles.signatureLine} />
           )}
-          <Text style={styles.signatureText}>( {data.staffNames?.[0] || 'ชื่อผู้ปฏิบัติงาน'} )</Text>
+          <Text style={styles.signatureText}>( {data.leaderName || data.staffNames?.[0] || 'ชื่อผู้ปฏิบัติงาน'} )</Text>
           <Text style={styles.signatureText}>ผู้ปฏิบัติงาน</Text>
           <Text style={styles.signatureText}>Date: {new Date().toLocaleDateString('th-TH')}</Text>
         </View>

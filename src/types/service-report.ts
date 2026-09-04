@@ -19,6 +19,8 @@ export interface ServiceReportFormValues {
   
   // 2. Team Attendance
   workersCount: number;
+  leaderName?: string;
+  assistantNames?: string[];
   staffNames: string[];
   
   // 3. Task & Action Summary

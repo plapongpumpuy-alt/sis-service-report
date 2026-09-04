@@ -44,6 +44,8 @@ export default function ServiceReportForm() {
       siteName: '',
       location: { latitude: null, longitude: null },
       workersCount: 1,
+      leaderName: '',
+      assistantNames: [],
       staffNames: [],
       jobType: 'Installation (งานติดตั้ง)',
       jobStatus: 'งานเสร็จเรียบร้อย',
@@ -115,12 +117,23 @@ export default function ServiceReportForm() {
     }
   }, [selectedSite, siteOptions, setValue]);
 
-  const selectedStaffs = watch('staffNames');
+  const selectedLeader = watch('leaderName');
+  const selectedAssistants = watch('assistantNames') || [];
   useEffect(() => {
-    if (selectedStaffs) {
-      setValue('workersCount', Math.max(1, selectedStaffs.length));
+    let cleanAssistants = selectedAssistants;
+    if (selectedLeader && selectedAssistants.includes(selectedLeader)) {
+       cleanAssistants = selectedAssistants.filter(a => a !== selectedLeader);
+       setValue('assistantNames', cleanAssistants);
     }
-  }, [selectedStaffs, setValue]);
+    
+    const total = (selectedLeader ? 1 : 0) + cleanAssistants.length;
+    setValue('workersCount', Math.max(1, total));
+    
+    const combined = [];
+    if (selectedLeader) combined.push(selectedLeader);
+    if (cleanAssistants.length > 0) combined.push(...cleanAssistants);
+    setValue('staffNames', combined);
+  }, [selectedLeader, selectedAssistants, setValue]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -129,7 +142,7 @@ export default function ServiceReportForm() {
     if (!data.startTime) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุ "เวลาเริ่มงาน"', 'warning');
     if (!data.siteName) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือก "รายชื่อลูกค้า / ไซต์งาน"', 'warning');
     if (!data.location.latitude) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณากดดึงตำแหน่ง "พิกัด GPS"', 'warning');
-    if (data.staffNames.length === 0) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือก "รายชื่อช่าง" อย่างน้อย 1 คน', 'warning');
+    if (!data.leaderName) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือก "หัวหน้างาน"', 'warning');
     if (!data.actionDetails.trim()) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอก "รายละเอียดการปฏิบัติงาน"', 'warning');
     if (data.photos.length === 0) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาถ่ายรูปหน้างานอย่างน้อย 1 รูป', 'warning');
     if (!data.technicianSignature) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเซ็นชื่อ "ช่างผู้ปฏิบัติงาน"', 'warning');
@@ -306,35 +319,56 @@ export default function ServiceReportForm() {
           name="workersCount"
           control={control}
           render={({ field }) => (
-            <Stepper label="จำนวนทีมงาน" value={field.value} onChange={field.onChange} />
+            <Stepper label="จำนวนทีมงานรวม" value={field.value} onChange={field.onChange} />
           )}
         />
-        
-        <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-50/80">
-            <label className="text-gray-700 font-medium text-sm block mb-3">เลือกรายชื่อช่าง (Tags)</label>
-            <div className="flex flex-wrap gap-2">
-                {isLoadingOptions ? <p className="text-sm text-gray-500">กำลังโหลดรายชื่อ...</p> : staffOptions.map((staff, index) => {
-                    const isSelected = watch('staffNames').includes(staff.fullName);
-                    return (
-                        <button
-                            key={`${staff.fullName}-${index}`}
-                            type="button"
-                            onClick={() => {
-                                const current = watch('staffNames');
-                                if (isSelected) {
-                                    setValue('staffNames', current.filter(n => n !== staff.fullName));
-                                } else {
-                                    setValue('staffNames', [...current, staff.fullName]);
-                                }
-                            }}
-                            className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
-                                isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-gray-200 text-gray-600 hover:border-blue-300'
-                            }`}
-                        >
-                            {staff.fullName}
-                        </button>
-                    )
-                })}
+
+        <div className="bg-blue-50/30 p-4 rounded-xl border border-blue-50/50 space-y-5">
+            <div>
+              <label className="text-gray-700 font-medium text-sm block mb-2">หัวหน้างาน (ชื่อผู้ลงนามในรายงาน)</label>
+              <Controller
+                name="leaderName"
+                control={control}
+                render={({ field }) => (
+                  <SearchableSelect 
+                    options={staffOptions.map(s => s.fullName)}
+                    value={field.value || ''}
+                    onChange={field.onChange}
+                    placeholder="ค้นหาหรือเลือกหัวหน้างาน..."
+                  />
+                )}
+              />
+            </div>
+
+            <div>
+              <label className="text-gray-700 font-medium text-sm block mb-3">เลือกรายชื่อช่างผู้ช่วย (Tags)</label>
+              <div className="flex flex-wrap gap-2">
+                  {isLoadingOptions ? <p className="text-sm text-gray-500">กำลังโหลดรายชื่อ...</p> : 
+                  staffOptions
+                    .filter(s => s.fullName !== watch('leaderName'))
+                    .map((staff, index) => {
+                      const isSelected = watch('assistantNames')?.includes(staff.fullName) || false;
+                      return (
+                          <button
+                              key={`${staff.fullName}-${index}`}
+                              type="button"
+                              onClick={() => {
+                                  const current = watch('assistantNames') || [];
+                                  if (isSelected) {
+                                      setValue('assistantNames', current.filter(n => n !== staff.fullName));
+                                  } else {
+                                      setValue('assistantNames', [...current, staff.fullName]);
+                                  }
+                              }}
+                              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                                  isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-gray-200 text-gray-600 hover:border-blue-300'
+                              }`}
+                          >
+                              {staff.fullName}
+                          </button>
+                      )
+                  })}
+              </div>
             </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Swal from 'sweetalert2';
 import React, { useState, useEffect } from 'react';
@@ -191,9 +191,13 @@ export default function ServiceReportForm() {
           .map(name => staffOptions.find(s => s.fullName === name)?.email)
           .filter(email => email) as string[];
           
-        let allRecipients: string[] = [];
+        let allRecipients: string[] = [
+          'prapat09@gmail.com',
+          'sisintegration005@gmail.com'
+        ];
+        
         if (staffEmails.length > 0) {
-           allRecipients = [...staffEmails];
+           allRecipients = [...allRecipients, ...staffEmails];
         }
         
         if (data.sendToCustomer && data.toEmail) {
@@ -590,10 +594,20 @@ export default function ServiceReportForm() {
           <h2 className="font-bold text-lg text-gray-800">ส่งอีเมลรายงาน</h2>
         </div>
         
-        <div className="space-y-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm font-medium text-blue-800 mb-2">อีเมลพนักงานที่เลือก (ส่งอัตโนมัติ)</p>
-            <div className="flex flex-wrap gap-2">
+                  <div className="space-y-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-sm font-medium text-blue-800 mb-2">ผู้รับหลัก (ส่งอัตโนมัติทุกครั้ง)</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-2 py-1 bg-white rounded text-xs text-blue-700 border border-blue-200">
+                  prapat09@gmail.com
+                </span>
+                <span className="px-2 py-1 bg-white rounded text-xs text-blue-700 border border-blue-200">
+                  sisintegration005@gmail.com
+                </span>
+              </div>
+
+              <p className="text-sm font-medium text-blue-800 mb-2">อีเมลพนักงานในทีม (ส่งอัตโนมัติ)</p>
+              <div className="flex flex-wrap gap-2">
               {watch('staffNames').length === 0 && <span className="text-xs text-gray-500">ยังไม่ได้เลือกพนักงาน</span>}
               {watch('staffNames').map(name => {
                  const staff = staffOptions.find(s => s.fullName === name);
@@ -664,3 +678,4 @@ export default function ServiceReportForm() {
     </form>
   );
 }
+

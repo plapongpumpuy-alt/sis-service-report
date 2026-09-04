@@ -69,3 +69,12 @@ src/
    - **Job Type:** Changed to match exactly 13 specific roles (e.g. Installation, Preventive, Repair, etc.).
    - **Job Status:** Translated to Thai with specific colors ("งานเสร็จเรียบร้อย" (Green), "ต้องมีการติดตามผล" (Red), "รอการดำเนินการ" (Yellow)).
    - Added an "อื่นๆ" (Other) option for Job Status which toggles a text input allowing custom status, preserving dynamic PDF coloring (Gray for custom statuses).
+
+## Recent Updates (v.2026.09.04.1015)
+1. **PWA Support (Add to Home Screen):** Created src/app/manifest.ts to enable Progressive Web App capabilities. When installed on Android/iOS, the app now launches in "standalone" mode (fullscreen, no browser URL bar) and uses company-header.png as the app icon.
+2. **Team Attendance Refactor:** 
+   - Split the generic "Tags" into two distinct fields: **Team Leader** (หัวหน้างาน) and **Assistants** (ช่างผู้ช่วย).
+   - The selected Team Leader is automatically prioritized and placed in the signature block (ReportDocument.tsx).
+   - Implemented logic to auto-sync the total workersCount and prevent the Team Leader from being accidentally selected again in the Assistants tags.
+3. **PDF Localization:** Changed the hardcoded "Technician" signature label to Thai "ผู้ปฏิบัติงาน".
+4. **Reverse Geocoding:** Updated LocationPicker.tsx to automatically fetch the human-readable address (via OpenStreetMap's Nominatim API) after obtaining coordinates. The address is displayed in the form UI and appended beneath the coordinates in the generated PDF.

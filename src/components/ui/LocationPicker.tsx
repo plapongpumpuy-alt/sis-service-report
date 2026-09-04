@@ -23,11 +23,11 @@ export default function LocationPicker({ value, onChange }: Props) {
           
           let addressStr = '';
           try {
-             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=th`);
              const data = await res.json();
              if (data && data.display_name) {
                 // Shorten by removing the country name to keep it concise
-                addressStr = data.display_name.replace(', ประเทศไทย', '');
+                addressStr = data.display_name.replace(', ประเทศไทย', '').replace(', Thailand', '');
              }
           } catch (e) {
              console.error("Reverse geocoding failed", e);

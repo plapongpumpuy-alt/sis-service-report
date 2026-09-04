@@ -213,7 +213,7 @@ export const ReportDocument = ({ data }: Props) => {
           <Text style={styles.label}>GPS Location</Text>
           <Text style={styles.value}>
             {data.location?.latitude 
-              ? `${data.location.latitude.toFixed(6)}, ${data.location.longitude?.toFixed(6)}` 
+              ? `${data.location.latitude.toFixed(6)}, ${data.location.longitude?.toFixed(6)}${data.location.address ? `\n${data.location.address}` : ''}` 
               : '-'}
           </Text>
         </View>

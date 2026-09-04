@@ -17,10 +17,26 @@ export default function LocationPicker({ value, onChange }: Props) {
     setLoading(true);
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          let addressStr = '';
+          try {
+             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+             const data = await res.json();
+             if (data && data.display_name) {
+                // Shorten by removing the country name to keep it concise
+                addressStr = data.display_name.replace(', ประเทศไทย', '');
+             }
+          } catch (e) {
+             console.error("Reverse geocoding failed", e);
+          }
+
           onChange({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            latitude: lat,
+            longitude: lon,
+            address: addressStr
           });
           setLoading(false);
         },
@@ -28,7 +44,7 @@ export default function LocationPicker({ value, onChange }: Props) {
           onChange({ latitude: null, longitude: null, error: error.message });
           setLoading(false);
         },
-        { enableHighAccuracy: true } // พยายามดึงให้แม่นยำที่สุด (สำคัญสำหรับมือถือ)
+        { enableHighAccuracy: true }
       );
     } else {
       onChange({ latitude: null, longitude: null, error: 'Geolocation not supported' });
@@ -47,18 +63,23 @@ export default function LocationPicker({ value, onChange }: Props) {
 
   return (
     <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-600">พิกัดสถานที่</p>
+      <div className="flex-1 pr-4">
+        <p className="text-sm text-gray-600 mb-1">พิกัดสถานที่</p>
         <p className="font-medium text-sm">
           {value?.latitude 
             ? `${value.latitude.toFixed(5)}, ${value.longitude?.toFixed(5)}` 
             : (loading ? 'กำลังค้นหาพิกัด...' : (value?.error ? 'ดึงพิกัดอัตโนมัติล้มเหลว' : 'ยังไม่ได้ดึงพิกัด'))}
         </p>
+        {value?.address && (
+          <p className="text-xs text-gray-500 mt-1 line-clamp-2" title={value.address}>
+            {value.address}
+          </p>
+        )}
       </div>
       <button 
         type="button" 
         onClick={handleGetLocation}
-        className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium"
+        className="flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium shrink-0"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
         {value?.latitude ? 'อัปเดตพิกัด' : 'ดึงพิกัด'}

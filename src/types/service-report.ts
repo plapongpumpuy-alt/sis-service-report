@@ -4,6 +4,7 @@ export type JobStatus = string;
 export interface LocationData {
   latitude: number | null;
   longitude: number | null;
+  address?: string;
   error?: string;
 }
 

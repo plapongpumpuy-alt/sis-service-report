@@ -18,6 +18,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#333',
   },
+  watermarkContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: -1,
+  },
+  watermarkImage: {
+    width: 350,
+    opacity: 0.1,
+  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -184,6 +198,11 @@ export const ReportDocument = ({ data }: Props) => {
   return (
   <Document>
     <Page size="A4" style={styles.page}>
+      
+      {/* Watermark Logo (fixed to appear on all pages) */}
+      <View style={styles.watermarkContainer} fixed>
+        <Image src="/app-icon.png" style={styles.watermarkImage} />
+      </View>
       
       {/* 1. Document Header */}
       <View style={styles.headerContainer}>

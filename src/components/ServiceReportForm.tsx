@@ -136,6 +136,17 @@ export default function ServiceReportForm() {
   }, [selectedLeader, selectedAssistants, setValue]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customAssistant, setCustomAssistant] = useState('');
+
+  const handleAddCustomAssistant = () => {
+    const name = customAssistant.trim();
+    if (!name) return;
+    const current = watch('assistantNames') || [];
+    if (!current.includes(name)) {
+        setValue('assistantNames', [...current, name]);
+    }
+    setCustomAssistant('');
+  };
 
   const onSubmit = async (data: ServiceReportFormValues) => {
     // Validation rules
@@ -342,7 +353,8 @@ export default function ServiceReportForm() {
 
             <div>
               <label className="text-gray-700 font-medium text-sm block mb-3">เลือกรายชื่อช่างผู้ช่วย (Tags)</label>
-              <div className="flex flex-wrap gap-2">
+              
+              <div className="flex flex-wrap gap-2 mb-3">
                   {isLoadingOptions ? <p className="text-sm text-gray-500">กำลังโหลดรายชื่อ...</p> : 
                   staffOptions
                     .filter(s => s.fullName !== watch('leaderName'))
@@ -368,6 +380,48 @@ export default function ServiceReportForm() {
                           </button>
                       )
                   })}
+                  
+                  {/* แสดงรายชื่อแบบ Custom (ที่ไม่อยู่ใน staffOptions) */}
+                  {watch('assistantNames')
+                    ?.filter(name => !staffOptions.find(s => s.fullName === name))
+                    .map(customName => (
+                      <button
+                          key={customName}
+                          type="button"
+                          onClick={() => {
+                              const current = watch('assistantNames') || [];
+                              setValue('assistantNames', current.filter(n => n !== customName));
+                          }}
+                          className="px-4 py-2 rounded-full text-sm font-medium border transition-all bg-blue-600 border-blue-600 text-white shadow-md flex items-center gap-1"
+                      >
+                          {customName}
+                          <span className="ml-1 text-blue-200 hover:text-white">×</span>
+                      </button>
+                  ))}
+              </div>
+
+              {/* ช่องกรอกชื่อช่างผู้ช่วยเพิ่มเติม (รับเหมา) */}
+              <div className="flex gap-2">
+                  <input 
+                     type="text" 
+                     value={customAssistant}
+                     onChange={(e) => setCustomAssistant(e.target.value)}
+                     placeholder="พิมพ์ชื่อช่างผู้ช่วยอื่นๆ (เช่น ผู้รับเหมานอก) แล้วกดเพิ่ม"
+                     className="flex-1 border border-gray-300 rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                     onKeyDown={(e) => {
+                         if (e.key === 'Enter') {
+                             e.preventDefault();
+                             handleAddCustomAssistant();
+                         }
+                     }}
+                  />
+                  <button 
+                     type="button"
+                     onClick={handleAddCustomAssistant}
+                     className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                  >
+                     + เพิ่มชื่อ
+                  </button>
               </div>
             </div>
         </div>

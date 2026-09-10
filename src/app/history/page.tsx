@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react';
 import PreviewModal from '@/components/pdf/PreviewModal';
 import { ServiceReportFormValues } from '@/types/service-report';
 
+const getStatusBadgeColor = (status: string) => {
+  if (status === 'งานเสร็จเรียบร้อย') return 'bg-green-100 text-green-700';
+  if (status === 'รอการดำเนินการ') return 'bg-yellow-100 text-yellow-700';
+  if (status === 'ต้องมีการติดตามผล') return 'bg-red-100 text-red-700';
+  return 'bg-gray-100 text-gray-700';
+};
+
 export default function HistoryPage() {
   const [history, setHistory] = useState<ServiceReportFormValues[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,10 +94,7 @@ export default function HistoryPage() {
                   <h3 className="font-bold text-lg text-gray-900">{report.reportId}</h3>
                   <p className="text-sm text-gray-500">{new Date(report.dateTime).toLocaleString('th-TH')}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  report.jobStatus === 'Completed' ? 'bg-green-100 text-green-700' : 
-                  report.jobStatus === 'Pending Parts' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-                }`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(report.jobStatus || '')}`}>
                   {report.jobStatus}
                 </span>
               </div>
@@ -115,3 +119,4 @@ export default function HistoryPage() {
     </main>
   );
 }
+

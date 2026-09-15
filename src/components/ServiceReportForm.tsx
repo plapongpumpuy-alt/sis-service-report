@@ -82,6 +82,21 @@ export default function ServiceReportForm() {
   const startTime = watch('startTime');
   const endTime = watch('endTime');
 
+  // Auto-update endTime to startTime + 15 mins
+  useEffect(() => {
+    if (startTime) {
+      const [sH, sM] = startTime.split(':').map(Number);
+      if (!isNaN(sH) && !isNaN(sM)) {
+        const date = new Date();
+        date.setHours(sH, sM, 0, 0);
+        date.setMinutes(date.getMinutes() + 15);
+        const eH = String(date.getHours()).padStart(2, '0');
+        const eM = String(date.getMinutes()).padStart(2, '0');
+        setValue('endTime', `${eH}:${eM}`);
+      }
+    }
+  }, [startTime, setValue]);
+
   useEffect(() => {
     if (startTime && endTime) {
       const [sH, sM] = startTime.split(':').map(Number);

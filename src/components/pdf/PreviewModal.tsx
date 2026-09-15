@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { PDFDownloadLink, pdf, usePDF } from '@react-pdf/renderer';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -28,7 +28,8 @@ export default function PreviewModal({ isOpen, onClose, data }: Props) {
   const [numPages, setNumPages] = useState<number>();
 
   // Generate PDF blob for preview using usePDF
-  const [pdfInstance] = usePDF({ document: <ReportDocument data={data} /> });
+  const doc = useMemo(() => <ReportDocument data={data} />, [data]);
+  const [pdfInstance] = usePDF({ document: doc });
 
   useEffect(() => {
     setIsMounted(true);
@@ -107,7 +108,7 @@ export default function PreviewModal({ isOpen, onClose, data }: Props) {
               {showEmailForm ? 'ซ่อนการส่งอีเมล' : 'ส่งอีเมล'}
             </button>
             <PDFDownloadLink 
-              document={<ReportDocument data={data} />} 
+              document={doc} 
               fileName={fileName}
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
             >

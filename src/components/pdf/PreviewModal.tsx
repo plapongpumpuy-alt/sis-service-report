@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { PDFViewer, PDFDownloadLink, pdf } from '@react-pdf/renderer';
+import { PDFDownloadLink, pdf, usePDF } from '@react-pdf/renderer';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { ReportDocument } from './ReportDocument';
 import { ServiceReportFormValues } from '@/types/service-report';
 import { X, Download, FileText, Mail, Send } from 'lucide-react';
 import Swal from 'sweetalert2';
+
+// Set up PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +25,10 @@ export default function PreviewModal({ isOpen, onClose, data }: Props) {
   const [emailTo, setEmailTo] = useState(data.toEmail || '');
   const [emailCC, setEmailCC] = useState(data.ccEmails || '');
   const [isSending, setIsSending] = useState(false);
+  const [numPages, setNumPages] = useState<number>();
+
+  // Generate PDF blob for preview using usePDF
+  const [pdfInstance] = usePDF({ document: <ReportDocument data={data} /> });
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,6 +83,10 @@ export default function PreviewModal({ isOpen, onClose, data }: Props) {
       setIsSending(false);
     }
   };
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setNumPages(numPages);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
@@ -140,11 +154,34 @@ export default function PreviewModal({ isOpen, onClose, data }: Props) {
         )}
 
         {/* PDF Viewer (Fills remaining height) */}
-        <div className="flex-1 bg-gray-100 p-2">
-          {/* We wrap PDFViewer in a client-only render because it doesn't support SSR */}
-          <PDFViewer className="w-full h-full border-0 rounded-xl shadow-inner">
-            <ReportDocument data={data} />
-          </PDFViewer>
+        <div className="flex-1 bg-gray-100 p-4 overflow-y-auto flex flex-col items-center gap-4 relative">
+          {!pdfInstance.url ? (
+            <div className="flex items-center justify-center h-full w-full">
+              <span className="text-gray-500 font-medium">กำลังสร้างตัวอย่าง PDF...</span>
+            </div>
+          ) : (
+            <Document
+              file={pdfInstance.url}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div className="flex items-center justify-center p-8">
+                  <span className="text-gray-500 font-medium">กำลังโหลดเอกสาร...</span>
+                </div>
+              }
+              className="max-w-full flex flex-col items-center gap-4"
+            >
+              {Array.from(new Array(numPages || 0), (el, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  className="shadow-xl bg-white"
+                  width={typeof window !== 'undefined' ? Math.min(window.innerWidth - 48, 800) : 800}
+                />
+              ))}
+            </Document>
+          )}
         </div>
 
       </div>

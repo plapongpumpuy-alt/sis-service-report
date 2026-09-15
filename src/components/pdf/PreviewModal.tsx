@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { PDFDownloadLink, pdf, usePDF } from '@react-pdf/renderer';
 import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { ReportDocument } from './ReportDocument';
 import { ServiceReportFormValues } from '@/types/service-report';
 import { X, Download, FileText, Mail, Send } from 'lucide-react';

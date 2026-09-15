@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Swal from 'sweetalert2';
 import React, { useState, useEffect } from 'react';
@@ -9,7 +9,8 @@ import Stepper from './ui/Stepper';
 import SpeechTextArea from './ui/SpeechTextArea';
 import PhotoCapture from './ui/PhotoCapture';
 import SignaturePad from './ui/SignaturePad';
-import PreviewModal from './pdf/PreviewModal';
+import dynamic from 'next/dynamic';
+const PreviewModal = dynamic(() => import('./pdf/PreviewModal'), { ssr: false });
 import SearchableSelect from './ui/SearchableSelect';
 import { pdf } from '@react-pdf/renderer';
 import { ReportDocument } from './pdf/ReportDocument';

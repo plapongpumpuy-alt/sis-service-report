@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import PreviewModal from '@/components/pdf/PreviewModal';
+import dynamic from 'next/dynamic';
+const PreviewModal = dynamic(() => import('@/components/pdf/PreviewModal'), { ssr: false });
 import { ServiceReportFormValues } from '@/types/service-report';
 
 const getStatusBadgeColor = (status: string) => {
